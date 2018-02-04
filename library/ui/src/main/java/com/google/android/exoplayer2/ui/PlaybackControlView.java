@@ -20,17 +20,25 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerLibraryInfo;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.util.Assertions;
@@ -169,10 +177,113 @@ import java.util.Locale;
  * attribute on a PlaybackControlView. This will cause the specified layout to be inflated instead
  * of {@code exo_playback_control_view.xml} for only the instance on which the attribute is set.
  */
-public class PlaybackControlView extends FrameLayout {
+public class PlaybackControlView extends FrameLayout
+        implements GestureDetector.OnGestureListener, View.OnTouchListener {
 
   static {
     ExoPlayerLibraryInfo.registerModule("goog.exo.ui");
+  }
+
+  GestureDetector mGestureDetector = null;
+
+  @Override
+  public boolean onTouch(View v, MotionEvent event) {
+    // TODO Auto-generated method stub
+    Log.i("grass","onTouch: " + event);
+    return mGestureDetector.onTouchEvent(event);
+  }
+
+  @Override
+  public boolean onDown(MotionEvent motionEvent) {
+    Log.e("grass", "[" + Thread.currentThread().getStackTrace()[2].getMethodName() + "]...");
+    return false;
+  }
+
+  @Override
+  public void onShowPress(MotionEvent motionEvent) {
+    Log.e("grass", "[" + Thread.currentThread().getStackTrace()[2].getMethodName() + "]...");
+  }
+
+  @Override
+  public boolean onSingleTapUp(MotionEvent motionEvent) {
+    Log.e("grass", "[" + Thread.currentThread().getStackTrace()[2].getMethodName() + "]...");
+    return false;
+  }
+
+  @Override
+  public boolean onScroll(MotionEvent e_start, MotionEvent e_end, float distanceX, float distanceY) {
+    Log.e("grass", "[" + Thread.currentThread().getStackTrace()[2].getMethodName() + "] -- "
+            + "[" + "distanceX: " + distanceX + ", distanceY: " + distanceY + "]...");
+
+    boolean is_horizontal = Math.abs(distanceX) > Math.abs(distanceY);
+
+    if (is_horizontal) {
+      /**
+       * x > 0, back;
+       * x < 0, forward
+       */
+      long backMs = Math.round(distanceX) * 100;
+      seekTo(Math.max(player.getCurrentPosition() - backMs, 0));
+
+      StringBuilder data = new StringBuilder("Seek - ");
+      if (backMs > 0) {
+        data.append("rewind(");
+      } else {
+        data.append("forward(");
+      }
+      data.append(Math.abs(backMs));
+      data.append(")...");
+
+      //Toast.makeText(getContext(), data.toString(), Toast.LENGTH_SHORT).show();
+    } else {
+
+      //获取系统最大音量
+      int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+      // 获取设备当前音量
+      int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+      float percent = 100.0f * currentVolume / maxVolume;
+
+      Log.e("grass", "current volume: [" + currentVolume + "/" + maxVolume
+              + "] : " + percent + "%");
+
+      percent += distanceY;
+
+      float tmp = percent * maxVolume / 100.0f;
+
+      int new_volume = Math.round(tmp);
+      Log.e("grass", "going to set volume: " + new_volume + "/" + maxVolume);
+
+      if (new_volume >= maxVolume) {
+        new_volume = maxVolume;
+      }
+
+      mAudioManager.setStreamVolume (AudioManager.STREAM_MUSIC,
+              new_volume, AudioManager.FLAG_PLAY_SOUND);
+
+      // raise
+      if (distanceY > 0) {
+        // change volume
+      } else {
+        // change volume
+      }
+
+    }
+
+    return true;
+  }
+
+  @Override
+  public void onLongPress(MotionEvent motionEvent) {
+    Log.e("grass", "[" + Thread.currentThread().getStackTrace()[2].getMethodName() + "]...");
+  }
+
+  @Override
+  public boolean onFling(MotionEvent e_start, MotionEvent e_end, float velocityX, float velocityY) {
+    Log.e("grass", "[" + Thread.currentThread().getStackTrace()[2].getMethodName() + "]...");
+
+    return false;
   }
 
   /**
@@ -385,7 +496,67 @@ public class PlaybackControlView extends FrameLayout {
         R.string.exo_controls_repeat_one_description);
     repeatAllButtonContentDescription = resources.getString(
         R.string.exo_controls_repeat_all_description);
+
+    mGestureDetector = new GestureDetector(this);
+
+    this.setLongClickable(true);
+    this.setOnTouchListener(this);
+
+    this.setOnDragListener(mOnDrageListener);
+
+    mAudioManager = (AudioManager) (getContext().getSystemService(Context.AUDIO_SERVICE));
   }
+
+  AudioManager mAudioManager = null;
+
+  View.OnDragListener mOnDrageListener = new View.OnDragListener() {
+
+    @Override
+    public boolean onDrag(View view, DragEvent event) {
+      Log.e("grass", "[" + Thread.currentThread().getStackTrace()[2].getMethodName() + "]...");
+
+      // Defines a variable to store the action type for the incoming event
+      final int action = event.getAction();
+
+      // Handles each of the expected events
+      switch (action) {
+
+        case DragEvent.ACTION_DRAG_STARTED: {
+          Log.e("grass", "[ACTION_DRAG_STARTED]: " + event + "...");
+        }
+          break;
+
+        case DragEvent.ACTION_DRAG_ENTERED:
+          Log.e("grass", "[ACTION_DRAG_ENTERED]: " + event + "...");
+          break;
+
+        case DragEvent.ACTION_DRAG_LOCATION:
+          Log.e("grass", "[ACTION_DRAG_LOCATION]: " + event + "...");
+          break;
+
+        case DragEvent.ACTION_DRAG_EXITED:
+          Log.e("grass", "[ACTION_DRAG_EXITED]: " + event + "...");
+          break;
+
+        case DragEvent.ACTION_DROP:
+          Log.e("grass", "[ACTION_DROP]: " + event + "...");
+          break;
+
+        case DragEvent.ACTION_DRAG_ENDED:
+          Log.e("grass", "[ACTION_DRAG_ENDED]: " + event + "...");
+          break;
+
+        // An unknown action type was received.
+        default:
+            Log.e("grass","Unknown action type received by OnDragListener.");
+
+            break;
+      };
+
+      return false;
+    }
+
+  };
 
   @SuppressWarnings("ResourceType")
   private static @RepeatModeUtil.RepeatToggleModes int getRepeatToggleModes(TypedArray a,
@@ -898,6 +1069,35 @@ public class PlaybackControlView extends FrameLayout {
     seekTo(Math.max(player.getCurrentPosition() - rewindMs, 0));
   }
 
+  String paramsToStr(PlaybackParameters params) {
+    String info = "[speed: " + params.speed + "," + params.pitch + "]";
+    return info;
+  }
+
+  private void speedUp() {
+    Log.e("grass", "[" + Thread.currentThread().getStackTrace()[2].getMethodName() + "]...");
+    PlaybackParameters origin_parameters = player.getPlaybackParameters();
+    Log.e("grass", "speedup -- origin: " + paramsToStr(origin_parameters));
+
+    float new_speed = 1.5f * origin_parameters.speed;
+    float new_pitch = origin_parameters.pitch;
+    PlaybackParameters new_params = new PlaybackParameters(new_speed, new_pitch);
+    Log.e("grass", "speedup -- new: " + paramsToStr(new_params));
+    player.setPlaybackParameters(new_params);
+  }
+
+  private void slowDown() {
+    Log.e("grass", "[" + new Throwable().getStackTrace()[0].getMethodName() + "]...");
+    PlaybackParameters origin_parameters = player.getPlaybackParameters();
+    Log.e("grass", "slowDown -- origin: " + paramsToStr(origin_parameters));
+
+    float new_speed = 0.8f * origin_parameters.speed;
+    float new_pitch = origin_parameters.pitch;
+    PlaybackParameters new_params = new PlaybackParameters(new_speed, new_pitch);
+    Log.e("grass", "slowDown -- new: " + paramsToStr(new_params));
+    player.setPlaybackParameters(new_params);
+  }
+
   private void fastForward() {
     if (fastForwardMs <= 0) {
       return;
@@ -911,6 +1111,9 @@ public class PlaybackControlView extends FrameLayout {
   }
 
   private void seekTo(long positionMs) {
+    PlaybackParameters params = player.getPlaybackParameters();
+    Log.e("grass", "seekTo: " + positionMs + ", pp: " + params);
+            //new Throwable("why?"));
     seekTo(player.getCurrentWindowIndex(), positionMs);
   }
 
@@ -989,8 +1192,10 @@ public class PlaybackControlView extends FrameLayout {
     }
     if (event.getAction() == KeyEvent.ACTION_DOWN) {
       if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+        Log.e("grass", "KEYCODE_MEDIA_FAST_FORWARD");
         fastForward();
       } else if (keyCode == KeyEvent.KEYCODE_MEDIA_REWIND) {
+        Log.e("grass", "KEYCODE_MEDIA_REWIND");
         rewind();
       } else if (event.getRepeatCount() == 0) {
         switch (keyCode) {
@@ -1112,9 +1317,13 @@ public class PlaybackControlView extends FrameLayout {
         } else if (previousButton == view) {
           previous();
         } else if (fastForwardButton == view) {
-          fastForward();
+          Log.e("grass", "onclick fastForwardButton");
+          //fastForward();
+          speedUp();
         } else if (rewindButton == view) {
-          rewind();
+          Log.e("grass", "onclick rewindButton");
+          //rewind();
+          slowDown();
         } else if (playButton == view) {
           controlDispatcher.dispatchSetPlayWhenReady(player, true);
         } else if (pauseButton == view) {

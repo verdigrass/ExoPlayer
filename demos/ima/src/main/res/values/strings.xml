@@ -17,7 +17,19 @@
 
   <string name="application_name">Exo IMA Demo</string>
 
+
   <string name="content_url"><![CDATA[http://rmcdn.2mdn.net/MotifFiles/html/1248596/android_1330378998288.mp4]]></string>
+
+
+  <!--
+    <string name="content_url"><![CDATA[https://apd-videohy.apdcdn.tc.qq.com/vlive.qqvideo.tc.qq.com/ALyZYj9pQRH3Li8eLiqimgkyLaQqBT0ZJDRGz8wAG7DE/j0025mje6ft.mp4?sdtfrom=v4010&guid=287d9439e9090fdaf1eaf85a75cd6103&vkey=5F431670DC496D52A24D9EE686E43CB895CC09E2253F0C91675CC0C72051A9322F7F2D6DE15C9E4216D4F29A9A1C232EE2C1705C891C7E5DF03387608179502764425CC392C84D499D7D56F5D36BB6837451495271728B8A1D11A174864CE78C6E152C308F1319F63A99CD2106522D9FFCA65084D2DF6EDE&platform=2&ocid=283975596]]></string>
+  -->
+
+  <!--
+<string name="content_url"><![CDATA[https://apd-a9247d8546585d8103218d4ef2f65185.v.smtcdns.com/vlive.qqvideo.tc.qq.com/AaPde2f9NYxoA0zLQjihsnTYTO92gS3UxBS6WPky69jY/f0024uul5px.mp4?sdtfrom=v4010&guid=287d9439e9090fdaf1eaf85a75cd6103&vkey=3CFCFFBE8836461DC6493D2EE892C785F2FCEA7420E7B796E07150619DEE82D938C3BF55A301317CAA8BF5CB20EBDCF1B83BF74784C8D5F76D54B559A4DCC21EF08DD837008DEADE656DFDFAC3586835710DD398C40FA37AF70E36A4B2EFC5E7EE1DD1C4357918B8551594D089566C4721285432EA38B2EC&platform=2]]></string>
+-->
+
+
 
   <string name="ad_tag_url"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=]]></string>
 

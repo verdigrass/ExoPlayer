@@ -17,6 +17,11 @@ package com.google.android.exoplayer2.imademo;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 
@@ -32,25 +37,36 @@ public final class MainActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    Log.e("grass", "[" + Thread.currentThread().getStackTrace()[2].getMethodName() + "]...");
+
     setContentView(R.layout.main_activity);
+
+
     playerView = findViewById(R.id.player_view);
     player = new PlayerManager(this);
   }
 
+
+
   @Override
   public void onResume() {
+    Log.e("grass", "[" + Thread.currentThread().getStackTrace()[2].getMethodName() + "]...");
     super.onResume();
     player.init(this, playerView);
   }
 
   @Override
   public void onPause() {
+    Log.e("grass", "[" + Thread.currentThread().getStackTrace()[2].getMethodName() + "]...");
+
     super.onPause();
     player.reset();
   }
 
   @Override
   public void onDestroy() {
+    Log.e("grass", "[" + Thread.currentThread().getStackTrace()[2].getMethodName() + "]...");
+
     player.release();
     super.onDestroy();
   }
