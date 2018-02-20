@@ -12,7 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 apply from: '../../constants.gradle'
-apply plugin: 'com.android.application'
+
+def ShrinkResource = false
+def buildType = 'apk'
+
+if (buildType.equals('apk')) {
+    print 'Build apk...'
+    apply plugin: 'com.android.application'
+}
+
+if (buildType.equals('aar')) {
+	print 'Build AAR...'
+	apply plugin: 'com.android.library'
+}
+
 
 android {
     compileSdkVersion project.ext.compileSdkVersion
@@ -25,7 +38,7 @@ android {
 
     buildTypes {
         release {
-            shrinkResources true
+            shrinkResources ShrinkResource
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt')
         }

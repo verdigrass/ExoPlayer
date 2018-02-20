@@ -398,6 +398,8 @@ import java.io.IOException;
   }
 
   private void setPlayWhenReadyInternal(boolean playWhenReady) throws ExoPlaybackException {
+    Log.e("grass", "setPlayWhenReadyInternal", new Throwable("#"));
+
     rebuffering = false;
     this.playWhenReady = playWhenReady;
     if (!playWhenReady) {
@@ -499,6 +501,8 @@ import java.io.IOException;
   }
 
   private void updatePlaybackPositions() throws ExoPlaybackException {
+    //Log.e("grass", "updatePlaybackPositions", new Throwable("#"));
+
     if (playingPeriodHolder == null) {
       return;
     }
@@ -537,6 +541,8 @@ import java.io.IOException;
   }
 
   private void doSomeWork() throws ExoPlaybackException, IOException {
+    //Log.e("grass", "doSomeWork", new Throwable("#"));
+
     long operationStartTimeMs = SystemClock.elapsedRealtime();
     updatePeriods();
     if (playingPeriodHolder == null) {
@@ -778,6 +784,9 @@ import java.io.IOException;
   }
 
   private void setPlaybackParametersInternal(PlaybackParameters playbackParameters) {
+
+    Log.i("grass", "setPlaybackParametersInternal: " + playbackParameters);
+
     if (rendererMediaClock != null) {
       playbackParameters = rendererMediaClock.setPlaybackParameters(playbackParameters);
     }
@@ -866,6 +875,8 @@ import java.io.IOException;
   }
 
   private void reselectTracksInternal() throws ExoPlaybackException {
+    Log.e("grass", "reselectTracksInternal", new Throwable("#"));
+
     if (playingPeriodHolder == null) {
       // We don't have tracks yet, so we don't care.
       return;
@@ -1264,6 +1275,8 @@ import java.io.IOException;
   }
 
   private void updatePeriods() throws ExoPlaybackException, IOException {
+    //Log.e("grass", "updatePeriods", new Throwable("#"));
+
     if (playbackInfo.timeline == null) {
       // We're waiting to get information about periods.
       mediaSource.maybeThrowSourceInfoRefreshError();

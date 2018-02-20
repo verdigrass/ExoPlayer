@@ -897,6 +897,11 @@ public class PlaybackControlView extends FrameLayout
         && canShowMultiWindowTimeBar(player.getCurrentTimeline(), window);
   }
 
+  @Override
+  public void setOnClickListener(@Nullable OnClickListener l) {
+    super.setOnClickListener(l);
+  }
+
   private void updateProgress() {
     if (!isVisible() || !isAttachedToWindow) {
       return;
